@@ -1,0 +1,20 @@
+{% extends 'gallery/base.html' %} 
+
+{% block content %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <h2>Welcome to IGallery!</h2>
+    <p>You are logged in.</p>
+    <a href="{% url 'gallery' %}">View Your Gallery</a> <br>
+    <a href="{% url 'saved_pictures' %}">View Your Saved Pictures</a> <br> 
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+{% endblock %}

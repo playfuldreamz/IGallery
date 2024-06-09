@@ -3,4 +3,5 @@ igallery-env/
 __pycache__/
 .env
 .DS_Store
-
+# Database files
+db.sqlite3

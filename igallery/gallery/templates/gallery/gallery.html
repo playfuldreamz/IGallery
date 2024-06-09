@@ -1,0 +1,18 @@
+{% extends 'gallery/base.html' %}
+
+{% block content %}
+    <h2>Your Instagram Gallery</h2>
+
+    {% if user_posts %}
+        <div class="gallery-grid">
+            {% for post in user_posts %}
+                <div class="gallery-item">
+                    <img src="{{ post.media_url }}" alt="{{ post.caption }}">
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No posts found.</p>
+    {% endif %}
+
+{% endblock %}
