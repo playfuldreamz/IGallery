@@ -9,4 +9,5 @@ urlpatterns = [
     path('instagram/callback/', views.instagram_callback, name='instagram_callback'),
     path('gallery/', views.gallery, name='gallery'),
     path('saved_pictures/', views.saved_pictures, name='saved_pictures'),
+    path('upload-saved-photos/', views.upload_saved_photos, name='upload-saved-photos'),
 ]

@@ -1,18 +1,14 @@
 {% extends 'gallery/base.html' %}
 
 {% block content %}
-    <h2>Your Saved Pictures</h2>
+<h2>Your Saved Pictures</h2>
 
-    {% if saved_pictures %}
-        <div class="gallery-grid">
-            {% for picture in saved_pictures %}
-                <div class="gallery-item">
-                    <img src="{{ picture.media_url }}" alt="{{ picture.caption }}">
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p>You haven't saved any pictures yet.</p>
-    {% endif %}
+<div class="gallery-grid">
+  {% for picture_url in saved_pictures %}
+  <div class="gallery-item">
+    <img src="{{ picture_url }}" alt="Saved Instagram Picture">
+  </div>
+  {% endfor %}
+</div> 
 
 {% endblock %}

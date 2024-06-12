@@ -7,6 +7,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.conf import settings
 from django.contrib import messages
 
+from django.core.management import call_command
+from .forms import SavedPhotosUploadForm
+
 from .models import UserProfile
 
 import requests
@@ -172,17 +175,28 @@ def saved_pictures(request):
     if request.user.is_authenticated:
         access_token = get_user_access_token(request.user)
 
-    if access_token:
-        try:
-            url = f"https://graph.instagram.com/me/saved?fields=id,caption,media_url&access_token={access_token}"
-            response = requests.get(url)
-            response.raise_for_status()
+    if access_token:  # (Consider removing this check since you're not using the API)
+        saved_pictures = request.user.userprofile.get_cached_image_urls()
+        context = {'saved_pictures': saved_pictures}
+        return render(request, 'gallery/saved_pictures.html', context)
 
-            data = response.json()
-            saved_pictures = data.get('data', [])
+@login_required
+def upload_saved_photos(request):
+    if request.method == 'POST':
+        form = SavedPhotosUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            json_file = request.FILES['json_file']
 
-        except requests.exceptions.RequestException as e:
-            messages.error(request, f'Error fetching saved pictures: {e}')
+            # 1. Read and store JSON data in the user profile
+            json_data = json_file.read().decode('utf-8')  # Read as UTF-8
+            request.user.userprofile.saved_photos_data = json_data
+            request.user.userprofile.save()
 
-    context = {'saved_pictures': saved_pictures}
-    return render(request, 'gallery/saved_pictures.html', context)
+            # 2. Trigger the management command (asynchronously if desired)
+            #  -  Consider using Celery or Django's background tasks for asynchronous processing.
+            call_command('process_saved_photos', request.user.id, '--dummy')
+            
+            return redirect('saved_pictures') # Or a success page
+    else:
+        form = SavedPhotosUploadForm()
+    return render(request, 'gallery/upload_saved_photos.html', {'form': form})
